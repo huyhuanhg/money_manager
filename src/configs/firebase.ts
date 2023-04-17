@@ -22,7 +22,7 @@ console.log('process.env.FIREBASE_AUTH_DOMAIN :>> ', process.env.REACT_APP_FIREB
 console.log('process.env.FIREBASE_PROJECT_ID :>> ', process.env.REACT_APP_FIREBASE_PROJECT_ID);
 console.log('process.env.FIREBASE_STORAGE_BUCKET :>> ', process.env.REACT_APP_FIREBASE_STORAGE_BUCKET);
 console.log('process.env.FIREBASE_MESSAGING_SENDER_ID :>> ', process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID);
-console.log('process.env.FIREBASE_APP_ID :>> ', process.env.REACT_APP_FIREBASE_APP_ID);
+console.log('process.env.TEST :>> ', process.env.TEST);
 
 // Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
