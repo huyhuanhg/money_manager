@@ -1,14 +1,16 @@
-import { NextResponse } from "next/server";
-import { useSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
-const middleware = (req: any) => {
-  console.log('req :>> ', req);
-  // const { url } = req
-  // console.log('url :>> ', url);
-  console.log('process.env.GOOGLE_ID :>> ', process.env.GOOGLE_ID);
-  console.log('process.env.GOOGLE_SECRET :>> ', process.env.GOOGLE_SECRET);
+export async function middleware(req: NextRequest) {
+  const session = await getToken({ req, secret: process.env.SECRET });
 
-  return NextResponse.next()
+  if (req.url.includes("/login") && session) {
+    return NextResponse.redirect(process.env.BASE_URL || "");
+  }
+
+  if (!session) {
+    return NextResponse.redirect("/login");
+  }
+
+  return NextResponse.next();
 }
-
-export default middleware

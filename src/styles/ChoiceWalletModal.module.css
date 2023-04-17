@@ -1,6 +1,16 @@
-.currentWallet {
-  position: sticky;
-  top: 0;
+.choiceWalletModal {
+  color: #fff;
+}
+
+.walletList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.walletItem {
+  list-style: none;
+  background-color: #1e1e1e;
+  border-radius: 6px;
   display: flex;
   gap: 10px;
   justify-content: space-between;
@@ -11,7 +21,7 @@
 
 .walletInfo {
   font-weight: bold;
-  font-size: 20px;
+  font-size: 1rem;
   line-height: 30px;
   display: flex;
   flex: 1 1 auto;
@@ -36,7 +46,7 @@
 }
 
 .currentMoney {
-  font-size: 24px;
+  font-size: 1.1rem;
   line-height: 30px;
   color: #20c997;
 }
