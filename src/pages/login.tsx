@@ -1,9 +1,28 @@
-import { signIn } from "next-auth/react";
+import { auth } from "@/configs/firebase";
+import { useSignInWithGoogle, useAuthState } from "react-firebase-hooks/auth";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import Loading from "@/components/Loading";
+
 const Login = () => {
-  const handleGoogleLogin = async () => {
-    console.log('process.env :>> ', process.env);
-    signIn("google", { callbackUrl: "http://localhost:3000" });
+  const [singInWithGoogle, _user, _loading, _err] = useSignInWithGoogle(auth);
+  const [loggedInUser, loading] = useAuthState(auth);
+  const { push } = useRouter();
+
+  const handleGoogleLogin = () => {
+    singInWithGoogle();
   };
+
+  useEffect(() => {
+    if (loggedInUser) {
+      push("/");
+    }
+  }, [loggedInUser, push]);
+
+  if (loading) {
+    return <Loading full />;
+  }
+
   return <button onClick={handleGoogleLogin}>Login</button>;
 };
 
