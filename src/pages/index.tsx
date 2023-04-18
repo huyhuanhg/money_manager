@@ -2,13 +2,16 @@ import styles from "@/styles/Home.module.css";
 import Layout from "@/layouts/DashboardLayout";
 import TransactionEmpty from "@/components/TransactionEmpty";
 import ChoiceWalletModal from "@/components/ChoiceWalletModal";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { db } from "@/configs/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, query, where } from "firebase/firestore";
 import { AuthComponentProps } from "@/types/AuthComponentProps";
+import { store } from "@/stores";
+import { ACTION_GET_ALL_OWNED_WALLETS } from "@/stores/constant";
 
 const Home = ({ user }: AuthComponentProps) => {
+  const { dispatch, ...state } = useContext(store);
   const [isOpenChoiceWallet, setIsOpenChoiceWallet] = useState(false);
   const [currentWallet, setCurrentWallet] = useState({
     icon: "A",
@@ -16,10 +19,15 @@ const Home = ({ user }: AuthComponentProps) => {
     money: 0,
   });
 
-  const q = query(
-    collection(db, "wallets"),
-    where("user", "==", user.email)
-  );
+  useEffect(() => {
+    dispatch({ type: ACTION_GET_ALL_OWNED_WALLETS, payload: { user } })
+  }, []);
+
+  useEffect(() => {
+    console.log('state :>> ', state);
+  }, [state]);
+
+  const q = query(collection(db, "wallets"), where("user", "==", user.email));
   const [wallets, __loading, __err] = useCollection(q);
 
   const showChoiceWalletModal = () => {

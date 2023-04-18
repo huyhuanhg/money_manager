@@ -1,9 +1,14 @@
-import { FC, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { auth, db } from "@/configs/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Loading from "@/components/Loading";
 import { useRouter } from "next/router";
-import { doc, serverTimestamp, setDoc, increment } from "firebase/firestore";
+// import { doc, serverTimestamp, setDoc, increment } from "firebase/firestore";
+import { store as storeConfig } from "@/stores";
+import { ACTION_AUTH_LOGIN } from "@/stores/constant";
+import { useDispatch } from "react-redux";
+import { fetchLogin } from "@/store/auth/action";
+import { ThunkDispatch } from "@reduxjs/toolkit";
 
 interface Props {
   component: React.ElementType;
@@ -12,50 +17,52 @@ interface Props {
 const Layout: FC<Props> = ({ component: Component, ...pageProps }) => {
   const [loggedInUser, loading] = useAuthState(auth);
   const { push } = useRouter();
-
+  const store = useContext(storeConfig);
+  const { dispatch } = store;
+  const dispatchM = useDispatch<ThunkDispatch<any, any, any>>()
   useEffect(() => {
-    const setUserInDb = async () => {
-      try {
-        await setDoc(
-          doc(db, "users", loggedInUser?.email as string),
-          {
-            email: loggedInUser?.email,
-            last_seen: serverTimestamp(),
-            photo_url: loggedInUser?.photoURL,
-          },
-          { merge: true }
-        );
-      } catch (error) {
-        console.error("ERROR SET USER INFO IN DB", error);
-      }
-    };
+    // const setUserInDb = async () => {
+    //   try {
+    //     await setDoc(
+    //       doc(db, "users", loggedInUser?.email as string),
+    //       {
+    //         email: loggedInUser?.email,
+    //         last_seen: serverTimestamp(),
+    //         photo_url: loggedInUser?.photoURL,
+    //       },
+    //       { merge: true }
+    //     );
+    //   } catch (error) {
+    //     console.error("ERROR SET USER INFO IN DB", error);
+    //   }
+    // };
 
-    const setWalletDefault = async () => {
-      try {
-        await setDoc(
-          doc(db, "wallets", `${loggedInUser?.email}__default`),
-          {
-            user: loggedInUser?.email as string,
-            title: "Tất cả",
-            icon: "A",
-            money: increment(0),
-          },
-          { merge: true }
-        );
-      } catch (error) {
-        console.error("ERROR SET DEFAULT WALLET INFO IN DB", error);
-      }
-    };
+    // const setWalletDefault = async () => {
+    //   try {
+    //     await setDoc(
+    //       doc(db, "wallets", `${loggedInUser?.email}__default`),
+    //       {
+    //         user: loggedInUser?.email as string,
+    //         title: "Tất cả",
+    //         icon: "A",
+    //         money: increment(0),
+    //       },
+    //       { merge: true }
+    //     );
+    //   } catch (error) {
+    //     console.error("ERROR SET DEFAULT WALLET INFO IN DB", error);
+    //   }
+    // };
 
     if (!loading && !loggedInUser) {
       push("/login");
     }
 
     if (loggedInUser) {
-      setUserInDb();
-      setWalletDefault();
+      dispatch({type: ACTION_AUTH_LOGIN, payload: { user: loggedInUser }})
+      dispatchM(fetchLogin())
     }
-  }, [loading, loggedInUser, push]);
+  }, [dispatch, loading, loggedInUser, push]);
 
   return (
     <main>
