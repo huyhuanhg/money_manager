@@ -1,16 +1,14 @@
 import styles from "@/styles/Home.module.css";
-import Layout from "@/layouts/Layout";
+import Layout from "@/layouts/DashboardLayout";
 import TransactionEmpty from "@/components/TransactionEmpty";
 import ChoiceWalletModal from "@/components/ChoiceWalletModal";
-import { useState } from "react";
-import { auth, db } from "@/configs/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useEffect, useState } from "react";
+import { db } from "@/configs/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, query, where } from "firebase/firestore";
+import { AuthComponentProps } from "@/types/AuthComponentProps";
 
-const Home = () => {
-  const [loggedInUser, _loading] = useAuthState(auth);
-
+const Home = ({ user }: AuthComponentProps) => {
   const [isOpenChoiceWallet, setIsOpenChoiceWallet] = useState(false);
   const [currentWallet, setCurrentWallet] = useState({
     icon: "A",
@@ -20,10 +18,9 @@ const Home = () => {
 
   const q = query(
     collection(db, "wallets"),
-    where("user", "==", loggedInUser?.email || 'Unknown')
+    where("user", "==", user.email)
   );
   const [wallets, __loading, __err] = useCollection(q);
-
 
   const showChoiceWalletModal = () => {
     setIsOpenChoiceWallet(true);

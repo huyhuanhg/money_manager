@@ -16,6 +16,13 @@ body {
   overflow: auto;
 }
 
+.layout-full {
+  color: #fff;
+  background-color: #5e5e5e;
+  height: 100vh;
+  overflow: auto;
+}
+
 .antd-modal .ant-modal-content{
   border-radius: 3px;
   background-color: #3a3a3a;
