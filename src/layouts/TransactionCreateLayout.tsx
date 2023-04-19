@@ -1,5 +1,5 @@
 import { FC, ReactNode } from "react";
-import Header from "@/components/CreateHeader";
+import Header from "@/components/transaction/CreateHeader";
 
 interface Props {
   children: ReactNode;

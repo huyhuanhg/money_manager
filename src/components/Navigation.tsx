@@ -6,8 +6,10 @@ import {
   PlusOutlined,
   WalletOutlined,
 } from "@ant-design/icons";
+import { useRouter } from "next/router";
 
 const Navigation = () => {
+  const router = useRouter()
   return (
     <nav className={styles.nav}>
       <ul className={styles.menu}>
@@ -19,7 +21,7 @@ const Navigation = () => {
           <MoneyCollectOutlined className={styles.icon} />
           <span className={styles.label}>Ngân sách</span>
         </li>
-        <li className={`${styles.menuItem} ${styles.newTrans}`}>
+        <li className={`${styles.menuItem} ${styles.newTrans}`} onClick={() => router.push('/transaction/create')}>
           <span className={styles.newTransIcon}><PlusOutlined /></span>
         </li>
         <li className={styles.menuItem}>

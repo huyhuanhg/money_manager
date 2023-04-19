@@ -1,6 +1,5 @@
 import AuthLayout from "@/layouts/AuthLayout";
-import store from "@/store";
-import { StateProvider } from "@/stores";
+import store from "@/stores";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -15,7 +14,6 @@ interface Props {
 const HTML: FC<Props> = ({ children }) => {
   return (
     <Provider store={store}>
-      <StateProvider>
         <Head>
           <title>Money Manager</title>
           <meta name="description" content="Quản lý túi tiền" />
@@ -23,7 +21,6 @@ const HTML: FC<Props> = ({ children }) => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         {children}
-      </StateProvider>
     </Provider>
   );
 };

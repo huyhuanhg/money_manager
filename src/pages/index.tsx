@@ -2,40 +2,28 @@ import styles from "@/styles/Home.module.css";
 import Layout from "@/layouts/DashboardLayout";
 import TransactionEmpty from "@/components/TransactionEmpty";
 import ChoiceWalletModal from "@/components/ChoiceWalletModal";
-import { useContext, useEffect, useState } from "react";
-import { db } from "@/configs/firebase";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { collection, query, where } from "firebase/firestore";
-import { AuthComponentProps } from "@/types/AuthComponentProps";
-import { store } from "@/stores";
-import { ACTION_GET_ALL_OWNED_WALLETS } from "@/stores/constant";
+import { useEffect, useState } from "react";
+import { AuthComponentProps } from "@/types/props/AuthComponentProps";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllOwnedWallet } from "@/stores/wallet/action";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import WalletReducerType from "@/types/reducers/WalletReducerType";
 
 const Home = ({ user }: AuthComponentProps) => {
-  const { dispatch, ...state } = useContext(store);
+  const dispatch = useDispatch<ThunkDispatch<any, any, any>>()
+  const { data: wallets, active: walletActiveIndex } = useSelector(({ walletReducer: wallets }: Record<string, WalletReducerType>) => wallets)
   const [isOpenChoiceWallet, setIsOpenChoiceWallet] = useState(false);
-  const [currentWallet, setCurrentWallet] = useState({
-    icon: "A",
-    title: "Tất cả",
-    money: 0,
-  });
 
   useEffect(() => {
-    dispatch({ type: ACTION_GET_ALL_OWNED_WALLETS, payload: { user } })
+    dispatch(fetchAllOwnedWallet({ email: user.email }))
   }, []);
-
-  useEffect(() => {
-    console.log('state :>> ', state);
-  }, [state]);
-
-  const q = query(collection(db, "wallets"), where("user", "==", user.email));
-  const [wallets, __loading, __err] = useCollection(q);
 
   const showChoiceWalletModal = () => {
     setIsOpenChoiceWallet(true);
   };
 
-  const onChangeCurrentWallet = (data: any) => {
-    setCurrentWallet(data);
+  const onChangeCurrentWallet = ({index}: Record<'index', number>) => {
+    dispatch({ type: 'wallet/changeActive', payload: {index}})
     setIsOpenChoiceWallet(false);
   };
 
@@ -43,11 +31,11 @@ const Home = ({ user }: AuthComponentProps) => {
     <Layout>
       <div className={styles.currentWallet} onClick={showChoiceWalletModal}>
         <div className={styles.walletInfo}>
-          <span className={styles.walletIcon}>{currentWallet?.icon}</span>
-          <span className={styles.walletTitle}>{currentWallet?.title}</span>
+          <span className={styles.walletIcon}>{wallets[walletActiveIndex]?.icon}</span>
+          <span className={styles.walletTitle}>{wallets[walletActiveIndex]?.title}</span>
         </div>
         <div className={styles.currentMoney}>
-          {new Intl.NumberFormat().format(currentWallet?.money)}đ
+          {new Intl.NumberFormat().format(wallets[walletActiveIndex]?.money)}đ
         </div>
       </div>
       <ChoiceWalletModal

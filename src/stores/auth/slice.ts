@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit"
 import { fetchLogin } from "./action"
 
 const initialState = {
-  status: 'abc'
+  email: '',
+  photoUrl: '',
+  fullName: ''
 }
 
 const auth = createSlice({
@@ -11,9 +13,13 @@ const auth = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(fetchLogin.fulfilled, (state, action) => {
-        console.log('123123123 :>> ', 123123123);
-        state.status = 'loading'
+      .addCase(fetchLogin.fulfilled, (state, { payload }) => {
+        return {
+          ...state,
+          email: payload.email,
+          photoUrl: payload.photoURL,
+          fullName: payload.displayName,
+        }
       })
   }
 })

@@ -1,13 +1,13 @@
 import { Modal } from "antd";
 import { FC } from "react";
 import styles from "@/styles/ChoiceWalletModal.module.css";
-import { DocumentData, QuerySnapshot } from "firebase/firestore";
+import Wallet from "@/types/entities/WalletType";
 
 interface Props {
   isOpen: boolean;
   setDisplay: Function;
   onChange: Function;
-  data: QuerySnapshot<DocumentData> | undefined;
+  data: Wallet[]
 }
 
 const ChoiceWalletModal: FC<Props> = ({
@@ -30,19 +30,19 @@ const ChoiceWalletModal: FC<Props> = ({
       onCancel={() => setDisplay(false)}
     >
       <ul className={styles.walletList}>
-        {data?.docs.map((wallet: DocumentData) => (
+        {data.map((wallet: Wallet, index) => (
           <li
             key={wallet.id}
             className={styles.walletItem}
             onClick={() =>
-              onChange({ icon: wallet?.data().icon, title: wallet?.data().title, money: wallet?.data().money })
+              onChange({ index })
             }
           >
             <div className={styles.walletInfo}>
-              <span className={styles.walletIcon}>{wallet?.data().icon}</span>
-              <span className={styles.walletTitle}>{wallet?.data().title}</span>
+              <span className={styles.walletIcon}>{wallet.icon}</span>
+              <span className={styles.walletTitle}>{wallet.title}</span>
             </div>
-            <div className={styles.currentMoney}>{new Intl.NumberFormat().format(wallet?.data().money || 0)}đ</div>
+            <div className={styles.currentMoney}>{new Intl.NumberFormat().format(wallet.money)}đ</div>
           </li>
         ))}
       </ul>
