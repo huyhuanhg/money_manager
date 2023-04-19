@@ -1,19 +1,27 @@
 import AuthLayout from "@/layouts/AuthLayout";
 import store from "@/stores";
-import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { FC, ReactNode } from "react";
 import { Provider } from "react-redux";
+import "@/styles/globals.css";
+import { ConfigProvider } from "antd";
 
 interface Props {
   children: ReactNode;
 }
 
+const theme = {
+  token: {
+    colorPrimary: "#20c997",
+  },
+};
+
 const HTML: FC<Props> = ({ children }) => {
   return (
     <Provider store={store}>
+      <ConfigProvider theme={theme}>
         <Head>
           <title>Money Manager</title>
           <meta name="description" content="Quản lý túi tiền" />
@@ -21,6 +29,7 @@ const HTML: FC<Props> = ({ children }) => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         {children}
+      </ConfigProvider>
     </Provider>
   );
 };

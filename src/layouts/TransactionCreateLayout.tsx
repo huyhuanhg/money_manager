@@ -3,12 +3,13 @@ import Header from "@/components/transaction/CreateHeader";
 
 interface Props {
   children: ReactNode;
+  title: string
 }
 
-const TransactionCreateLayout: FC<Props> = ({ children }) => {
+const TransactionCreateLayout: FC<Props> = ({ children, title }) => {
   return (
     <main className="layout-full">
-    <Header />
+    <Header title={title} />
     {children}
   </main>
   );

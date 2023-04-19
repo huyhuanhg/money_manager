@@ -1,3 +1,4 @@
+import { Form } from "antd";
 import styled from "styled-components";
 
 const Nav = styled.div`
@@ -7,7 +8,7 @@ const Nav = styled.div`
   gap: 5px;
 
   ul {
-    margin-top: 5px;
+    margin: 5px 0;
     padding: 0px;
     display: flex;
     background-color: #262626;
@@ -39,4 +40,51 @@ const Nav = styled.div`
   }
 `;
 
-export { Nav };
+const Container = styled.div`
+  background-color: #8c8c8c;
+`;
+
+const Field = styled.div`
+  display: flex;
+  gap: 5px;
+  border-bottom: 1px solid #bfbfbf;
+  padding-bottom: 15px;
+
+  .icon {
+    flex: 0 0 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
+const FormControl = styled(Form.Item)`
+  flex: 1;
+  margin: 0;
+  .ant-form-item-label {
+    padding: 0 11px;
+    color: #fff;
+
+    label {
+      color: #fff;
+      font-size: 16px;
+    }
+    .ant-form-item-required::before {
+      display: none !important;
+    }
+  }
+
+  [class*="ant-input"] {
+    width: 100%;
+    color: #fff;
+  }
+
+  [class*="ant-input"],
+  [class*="ant-input"]:focus {
+    background: unset !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+`;
+
+export { Nav, Container, FormControl, Field };
