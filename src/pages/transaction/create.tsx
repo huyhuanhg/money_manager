@@ -1,19 +1,41 @@
 import { AuthComponentProps } from "@/types/props/AuthComponentProps";
 import Layout from "@/layouts/TransactionCreateLayout";
 import { Container, Field, FormControl, Nav } from "./create-style";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   EditOutlined,
   SwapOutlined,
   TransactionOutlined,
 } from "@ant-design/icons";
-import { Form, InputNumber } from "antd";
+import { Form, InputNumber, Select } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import { fetchAllOwnedWallet } from "@/stores/wallet/action";
+import WalletReducerType from "@/types/reducers/WalletReducerType";
 
 const TransactionCreate = ({ user }: AuthComponentProps) => {
+  const dispatch = useDispatch<ThunkDispatch<any, any, any>>()
   const [mode, setMode] = useState({
     type: "trans",
     title: "Thêm giao dịch",
   });
+
+  const walletOptions = useSelector(({ walletReducer: wallets }: Record<string, WalletReducerType>) => {
+    const { data } = { ...wallets }
+
+    if (data.length <= 1) {
+      return []
+    }
+
+    return data.filter(({id}) => id !== 'default').map(({ id, title, money }) => ({
+      value: id,
+      label: `${title} (${money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ)`,
+    }))
+  })
+
+  useEffect(() => {
+    dispatch(fetchAllOwnedWallet({ email: user.email }))
+  }, []);
 
   const changeMode = (updateMode: string) => {
     if (mode.type === updateMode) {
@@ -63,9 +85,26 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
             <FormControl
               label="Số tiền"
               name="money"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Bắt buộc" }]}
             >
-              <InputNumber />
+              <InputNumber
+                formatter={(value) =>
+                  `${(value as string).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ`
+                }
+              />
+            </FormControl>
+          </Field>
+          <Field>
+            <div className="icon">ICON</div>
+            <FormControl
+              name="wallet"
+              rules={[{ required: true, message: "Bắt buộc" }]}
+            >
+              <Select
+                labelInValue
+                placeholder="Chọn ví"
+                options={walletOptions}
+              />
             </FormControl>
           </Field>
         </Form>

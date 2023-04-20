@@ -48,7 +48,7 @@ const Field = styled.div`
   display: flex;
   gap: 5px;
   border-bottom: 1px solid #bfbfbf;
-  padding-bottom: 15px;
+  padding-bottom: 20px;
 
   .icon {
     flex: 0 0 50px;
@@ -84,6 +84,15 @@ const FormControl = styled(Form.Item)`
     background: unset !important;
     border: none !important;
     box-shadow: none !important;
+  }
+  #money {
+    font-size: 20px;
+  }
+
+  .ant-form-item-explain {
+    position: absolute;
+    top: 100%;
+    padding-left: 11px;
   }
 `;
 
