@@ -8,22 +8,35 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllOwnedWallet } from "@/stores/wallet/action";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import WalletReducerType from "@/types/reducers/WalletReducerType";
+import ChoiceWalletDrawer from "@/components/ChoiceWalletDrawer";
+import { Btn } from "@/components/common";
+import { theme } from "antd";
+import { useTheme } from "@/hooks";
 
 const Home = ({ user }: AuthComponentProps) => {
-  const dispatch = useDispatch<ThunkDispatch<any, any, any>>()
-  const { data: wallets, active: walletActiveIndex } = useSelector(({ walletReducer: wallets }: Record<string, WalletReducerType>) => wallets)
+  const { token } = theme.useToken();
+
+  const token1 = useTheme();
+  useEffect(() => {
+    console.log("token :>> ", token, token1.blue1);
+  }, [token, token1]);
+
+  const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
+  const { data: wallets, active: walletActiveIndex } = useSelector(
+    ({ walletReducer: wallets }: Record<string, WalletReducerType>) => wallets
+  );
   const [isOpenChoiceWallet, setIsOpenChoiceWallet] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAllOwnedWallet({ email: user.email }))
+    dispatch(fetchAllOwnedWallet({ email: user.email }));
   }, []);
 
   const showChoiceWalletModal = () => {
     setIsOpenChoiceWallet(true);
   };
 
-  const onChangeCurrentWallet = ({index}: Record<'index', number>) => {
-    dispatch({ type: 'wallet/changeActive', payload: {index}})
+  const onChangeCurrentWallet = ({ index }: Record<"index", number>) => {
+    dispatch({ type: "wallet/changeActive", payload: { index } });
     setIsOpenChoiceWallet(false);
   };
 
@@ -31,20 +44,25 @@ const Home = ({ user }: AuthComponentProps) => {
     <Layout>
       <div className={styles.currentWallet} onClick={showChoiceWalletModal}>
         <div className={styles.walletInfo}>
-          <span className={styles.walletIcon}>{wallets[walletActiveIndex]?.icon}</span>
-          <span className={styles.walletTitle}>{wallets[walletActiveIndex]?.title}</span>
+          <span className={styles.walletIcon}>
+            {wallets[walletActiveIndex]?.icon}
+          </span>
+          <span className={styles.walletTitle}>
+            {wallets[walletActiveIndex]?.title}
+          </span>
         </div>
         <div className={styles.currentMoney}>
           {new Intl.NumberFormat().format(wallets[walletActiveIndex]?.money)}đ
         </div>
       </div>
-      <ChoiceWalletModal
+      <ChoiceWalletDrawer
         isOpen={isOpenChoiceWallet}
         setDisplay={setIsOpenChoiceWallet}
         onChange={onChangeCurrentWallet}
         data={wallets}
       />
       <main>
+        <Btn>Button</Btn>
         <TransactionEmpty />
       </main>
     </Layout>

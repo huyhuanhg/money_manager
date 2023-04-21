@@ -1,4 +1,4 @@
-import { Form } from "antd";
+import { Form, Space } from "antd";
 import styled from "styled-components";
 
 const Nav = styled.div`
@@ -48,7 +48,7 @@ const Field = styled.div`
   display: flex;
   gap: 5px;
   border-bottom: 1px solid #bfbfbf;
-  padding-bottom: 20px;
+  padding: 5px 0;
 
   .icon {
     flex: 0 0 50px;
@@ -74,13 +74,21 @@ const FormControl = styled(Form.Item)`
     }
   }
 
-  [class*="ant-input"] {
+  .ant-select-arrow,
+  .ant-select-selection-item {
+    color: #fff;
+  }
+
+  [class*="ant-input"],
+  .ant-select-selection-placeholder {
     width: 100%;
     color: #fff;
   }
 
   [class*="ant-input"],
-  [class*="ant-input"]:focus {
+  [class*="ant-input"]:focus,
+  .ant-select-selector:focus,
+  .ant-select-selector {
     background: unset !important;
     border: none !important;
     box-shadow: none !important;
@@ -96,4 +104,9 @@ const FormControl = styled(Form.Item)`
   }
 `;
 
-export { Nav, Container, FormControl, Field };
+const SelectDropDownFooter = styled(Space)`
+  width: 100%;
+  justify-content: end;
+`;
+
+export { Nav, Container, FormControl, Field, SelectDropDownFooter };

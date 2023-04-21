@@ -28,3 +28,8 @@ body {
   background-color: #3a3a3a;
   padding: 5px;
 }
+
+.ant-select-dropdown {
+  background-color: #434343;
+  border-radius: 3px;
+}
