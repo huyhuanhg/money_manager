@@ -1,3 +1,5 @@
 import { DrawerProps as ADrawerProps } from "antd";
 
-export default interface DrawerProps extends ADrawerProps {}
+export default interface DrawerProps extends ADrawerProps {
+  btnClosePos?: "left" | "right";
+}

@@ -8,7 +8,11 @@ const nextConfig = {
     NEXT_APP_FIREBASE_STORAGE_BUCKET: process.env.NEXT_APP_FIREBASE_STORAGE_BUCKET,
     NEXT_APP_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_APP_FIREBASE_MESSAGING_SENDER_ID,
     NEXT_APP_FIREBASE_APP_ID: process.env.NEXT_APP_FIREBASE_APP_ID,
-  }
+  },
+  compiler: {
+    // ssr and displayName are configured by default
+    styledComponents: true,
+  },
 }
 
 module.exports = nextConfig

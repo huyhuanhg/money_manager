@@ -15,6 +15,8 @@ interface Props {
 const theme = {
   token: {
     colorPrimary: "#20c997",
+    colorBgLayout: "#5e5e5e",
+    borderRadius: 3,
   },
 };
 
