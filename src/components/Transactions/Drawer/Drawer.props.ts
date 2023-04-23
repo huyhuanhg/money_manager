@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 export default interface CreationDrawerProps {
-  title: string,
-  type: string
-  children: ReactNode
+  title: string;
+  submit: Function;
+  children: ReactNode;
 }

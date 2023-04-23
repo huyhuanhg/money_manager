@@ -5,7 +5,7 @@ import Container from "./Drawer.style";
 import Navigation from "../Navigation";
 import { useRouter } from "next/router";
 
-const CreationDrawer: FC<CreationDrawerProps> = ({ children, title, type }) => {
+const CreationDrawer: FC<CreationDrawerProps> = ({ children, title, submit }) => {
   const router = useRouter();
 
   const onClose = () => {
@@ -18,10 +18,10 @@ const CreationDrawer: FC<CreationDrawerProps> = ({ children, title, type }) => {
       title={title}
       placement="bottom"
       open={true}
-      footer={<Button>Lưu</Button>}
+      footer={<Button onClick={() => submit()}>Lưu</Button>}
       onClose={onClose}
     >
-      <Navigation type={type} />
+      <Navigation />
       {children}
     </Container>
   );

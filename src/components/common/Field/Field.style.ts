@@ -97,6 +97,13 @@ export const DrawerControl = styled.div`
       text-align: right;
       width: 100%;
     }
+    .value {
+      display: inline-block;
+      padding: 0 11px;
+      color: #fff;
+      text-align: right;
+      width: 100%;
+    }
     .down-icon {
       ${mark}
     }
@@ -104,26 +111,41 @@ export const DrawerControl = styled.div`
 `;
 
 export const DateTimePicker = styled.div`
-  ${wrapper}
+  line-height: 35px;
+  display: flex;
+  height: 35px;
   .ant-picker {
-    ${wrapper}
-    ${control}
-    width: 100%;
+    flex: 1 1 50%;
+    background: unset;
+    border: none;
+    box-shadow: none;
+    line-height: 35px;
     padding: 0;
+
+    .ant-picker-suffix {
+      margin: 0;
+      width: 40px;
+      font-size: 20px;
+      color: #fff;
+      justify-content: center;
+    }
+
+    &.date {
+      .ant-picker-suffix {
+        display: none;
+      }
+    }
+
     input {
-      line-height: 35px;
+      padding: 0 11px;
       font-size: 20px;
       color: #fff;
       text-align: right;
-      padding: 0 11px;
     }
-  }
-  .ant-picker-suffix {
-    ${mark}
-    margin: 0;
-  }
-  .ant-picker-clear {
-    display: none;
+
+    .ant-picker-clear {
+      display: none;
+    }
   }
 `;
 

@@ -1,8 +1,15 @@
 import { db } from "@/configs/firebase";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 
-export const fetchAllOwnedWallet = createAsyncThunk(
+export const fetchAllOwnedWallets = createAsyncThunk(
   "wallet/all_owned",
   async ({ email }: any) => {
     const q = query(collection(db, "wallets"), where("user", "==", email));
@@ -18,5 +25,19 @@ export const fetchAllOwnedWallet = createAsyncThunk(
       };
     });
     return Promise.resolve({ wallets });
+  }
+);
+
+export const fetchChangeBalance = createAsyncThunk(
+  "wallet/change_the_balance",
+  async ({ id, money }: any) => {
+    await updateDoc(
+      doc(db, "wallets", id),
+      {
+        money,
+      }
+    );
+
+    return Promise.resolve({ id, money });
   }
 );

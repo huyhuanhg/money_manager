@@ -4,26 +4,21 @@ import {
   TransactionOutlined,
 } from "@ant-design/icons";
 import Container from "./Navigation.style";
-import { FC, useEffect } from "react";
-import NavigationProps from "./Navigation.props";
+import { FC } from "react";
 import { useRouter } from "next/router";
 
-const Navigation: FC<NavigationProps> = ({ type }) => {
+const Navigation: FC = () => {
   const router = useRouter();
-
-  useEffect(() => {
-    console.log('router :>> ', router);
-  }, [])
   return (
     <Container>
       <ul>
         <li className={`icon ${router.pathname === "/transaction" && "active"}`}>
           <TransactionOutlined />
         </li>
-        <li className={`icon ${type === "/transaction/switch" && "active"}`}>
+        <li className={`icon ${router.pathname === "/transaction/switch" && "active"}`}>
           <SwapOutlined />
         </li>
-        <li className={`icon ${type === "/transaction/modify" && "active"}`}>
+        <li className={`icon ${router.pathname === "/transaction/modify" && "active"}`}>
           <EditOutlined />
         </li>
       </ul>

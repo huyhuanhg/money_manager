@@ -8,15 +8,18 @@ const ChoiceWalletDrawer: FC<ChoiceWalletDrawerProps> = ({
   isOpen,
   setDisplay,
   onChange,
+  height,
   data,
+  placement
 }) => {
   const onClose = () => {
     setDisplay(false);
   };
   return (
     <Container
+      height={height ?? "auto"}
       title="Chọn ví"
-      placement="top"
+      placement={placement ?? "top"}
       open={isOpen}
       onClose={onClose}
       footer={<Button>Thêm ví</Button>}

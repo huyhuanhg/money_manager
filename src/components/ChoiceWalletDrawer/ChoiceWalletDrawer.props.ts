@@ -5,4 +5,6 @@ export default interface ChoiceWalletDrawerProps {
   setDisplay: Function;
   onChange: Function;
   data: Wallet[];
+  height?: number | string,
+  placement?: 'top' | 'bottom'
 }
