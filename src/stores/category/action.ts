@@ -38,6 +38,6 @@ export const fetchAllOwnedCategories = createAsyncThunk(
         };
       });
 
-    return Promise.resolve({ categories: Object.values(parents) });
+    return Promise.resolve({ categories, formatCategories: Object.values(parents) });
   }
 );

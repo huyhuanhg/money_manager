@@ -84,3 +84,21 @@ export const fetchPaginateOwnedTransactions = createAsyncThunk(
     }
   }
 );
+
+export const fetchTransactionById = createAsyncThunk(
+  "transaction/get_by_id",
+  async ({ id }: any) => {
+    try {
+      const transaction = await getDoc(doc(db, "transactions", id));
+
+      return Promise.resolve({
+        transaction: {
+          id: transaction.id,
+          ...transaction.data(),
+        },
+      });
+    } catch (e) {
+      return Promise.reject();
+    }
+  }
+);

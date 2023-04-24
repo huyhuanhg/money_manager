@@ -19,18 +19,31 @@ import Wallet from "@/types/entities/WalletType";
 import ChoiceCategoryDrawer from "@/components/ChoiceCategoryDrawer";
 import { fetchAllOwnedCategories } from "@/stores/category/action";
 import Category from "@/types/entities/CategoryType";
-import { fetchStoreTransaction } from "@/stores/transaction/action";
+import {
+  fetchStoreTransaction,
+  fetchTransactionById,
+} from "@/stores/transaction/action";
 import { useRouter } from "next/router";
+import CategoryReducerType from "@/types/reducers/CategoryReducerType";
+import TransactionReducerType from "@/types/reducers/TransactionReducerType";
+import { DATETIME_FORMAT, DATE_FORMAT, TIME_FORMAT } from "@/configs";
 
 const TransactionCreate = ({ user }: AuthComponentProps) => {
   const router = useRouter();
+
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const { data: wallets } = useSelector(
     ({ walletReducer: wallets }: Record<string, WalletReducerType>) => wallets
   );
-  const { data: categories } = useSelector(
-    ({ categoryReducer: categories }: Record<string, WalletReducerType>) =>
+
+  const { formatData: categories, data: baseCategories } = useSelector(
+    ({ categoryReducer: categories }: Record<string, CategoryReducerType>) =>
       categories
+  );
+
+  const { detail: transaction } = useSelector(
+    ({ transactionReducer: detail }: Record<string, TransactionReducerType>) =>
+      detail
   );
 
   const now = dayjs();
@@ -73,9 +86,67 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
   };
 
   useEffect(() => {
+    const { id } = router.query;
+
+    if (id) {
+      dispatch(fetchTransactionById({ id }));
+    }
+
     dispatch(fetchAllOwnedCategories({ email: user.email }));
     dispatch(fetchAllOwnedWallets({ email: user.email }));
+
+    return () => {
+      dispatch({ type: "transaction/clear_detail" });
+    };
   }, []);
+
+  useEffect(() => {
+    if (wallets.length && baseCategories.length && transaction) {
+      const walletInfo = wallets.find(
+        (wallet) => wallet.id === transaction.wallet
+      );
+      const categoryInfo = baseCategories.find(
+        (category) => category.id === transaction.category
+      );
+
+      const now = dayjs(transaction.datetime, DATETIME_FORMAT);
+
+      const state = {
+        ...formState,
+      };
+
+      Object.assign(state, {
+        money: {
+          ...state.money,
+          value: Math.abs(transaction.money),
+        },
+        category: {
+          ...state.category,
+          value: transaction.category,
+          label: categoryInfo?.title,
+        },
+        wallet: {
+          ...state.wallet,
+          value: transaction.wallet,
+          label: walletInfo?.title,
+        },
+        date: {
+          value: now.format(DATE_FORMAT),
+        },
+        time: {
+          value: now.format(TIME_FORMAT),
+        },
+        note: {
+          value: transaction.note,
+        },
+        notReportFlg: {
+          value: transaction.notReportFlg,
+        },
+      });
+
+      setFormState(state);
+    }
+  }, [transaction, wallets, baseCategories]);
 
   const onOpenWalletDrawer = () => {
     setIsOpenWalletDrawer(true);
@@ -166,10 +237,15 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
 
     dispatch(fetchStoreTransaction({ data, email: user.email })).then(
       ({ payload }: any) => {
-        const walletIndex = wallets.findIndex((wallet) => payload.walletId === wallet.id)
+        const walletIndex = wallets.findIndex(
+          (wallet) => payload.walletId === wallet.id
+        );
 
         dispatch(
-          fetchChangeBalance({ id: payload.walletId, money: wallets[walletIndex].money + payload.balance })
+          fetchChangeBalance({
+            id: payload.walletId,
+            money: wallets[walletIndex].money + payload.balance,
+          })
         );
       }
     );
@@ -186,7 +262,7 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
           formatter={(value) =>
             `${(value as string).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
           }
-          value={formState.money.label}
+          value={formState.money.value}
           onChange={(value) => handleChangeFormState("money", { value })}
           onFocus={() => handleChangeFormState("money", { error: "" })}
         />
@@ -256,7 +332,13 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
           />
         </FieldStyle.Input>
       </Field>
-      <Field>
+      <Field
+        onClick={() =>
+          handleChangeFormState("notReportFlg", {
+            value: !formState.notReportFlg.value,
+          })
+        }
+      >
         <FieldStyle.ReportMode>
           <span className="label">Không đưa vào báo cáo</span>
           <Switch

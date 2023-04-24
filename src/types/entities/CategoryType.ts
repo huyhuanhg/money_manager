@@ -3,5 +3,4 @@ export default interface Category {
   icon?: string;
   title: string;
   parent_id?: string | null;
-  child?: Category[] | null
 }

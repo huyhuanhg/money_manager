@@ -4,6 +4,7 @@ import { fetchAllOwnedCategories } from "./action";
 
 const initialState: CategoryReducerType = {
   data: [],
+  formatData: []
 };
 
 const category = createSlice({
@@ -15,6 +16,7 @@ const category = createSlice({
       return {
         ...state,
         data: payload.categories,
+        formatData: payload.formatCategories,
       };
     });
   },

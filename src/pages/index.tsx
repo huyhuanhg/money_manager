@@ -12,6 +12,7 @@ import ActiveWallet from "@/components/ActiveWallet";
 import { fetchFirstPaginateOwnedTransactions } from "@/stores/transaction/action";
 import Transactions from "@/components/Transactions";
 import TransactionReducerType from "@/types/reducers/TransactionReducerType";
+import { fetchAllOwnedCategories } from "@/stores/category/action";
 
 const Home = ({ user }: AuthComponentProps) => {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
@@ -25,6 +26,7 @@ const Home = ({ user }: AuthComponentProps) => {
   const [isDisplayChoiceWallet, setIsDisplayChoiceWallet] = useState(false);
 
   useEffect(() => {
+    dispatch(fetchAllOwnedCategories({ email: user.email }));
     dispatch(fetchAllOwnedWallets({ email: user.email }));
     dispatch(fetchFirstPaginateOwnedTransactions({ email: user.email }));
   }, []);

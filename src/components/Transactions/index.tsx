@@ -1,63 +1,123 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import TransactionsProps from "./Transactions.props";
 import Container, * as Style from "./Transactions.style";
 import Transaction from "@/types/entities/TransactionType";
 import dayjs from "dayjs";
 import moment from "moment";
 import "moment/locale/vi";
-
-import { unitOfTime } from "moment";
+import { arrKeyBy, dayOfWeek } from "@/helpers/datetime";
+import { DATETIME_FORMAT, DATE_FORMAT, TIME_FORMAT } from "@/configs";
+import { useSelector } from "react-redux";
+import CategoryReducerType from "@/types/reducers/CategoryReducerType";
+import Category from "@/types/entities/CategoryType";
+import { useRouter } from "next/router";
 
 const Transactions: FC<TransactionsProps> = ({ data }) => {
-  const prepareData = (data: Transaction[]) => {
-    const result: Record<string, any[]> = {};
+  const router = useRouter();
 
-    console.log("dayjs().weekday(1) :>> ", moment().locale("vi").format("L"));
+  const { data: categories } = useSelector(
+    ({ categoryReducer: categories }: Record<string, CategoryReducerType>) =>
+      categories
+  );
+
+  const [categoriesByKey, setCategoriesByKey] = useState<
+    Record<string, Category>
+  >({});
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      setCategoriesByKey(arrKeyBy(categories, "id"));
+    }
+  }, [categories]);
+
+  const prepareData = (data: Transaction[]) => {
+    const result: Record<string, Record<string, any>> = {};
+
     data.forEach((transaction) => {
-      const key = dayjs(transaction.datetime, "DD/MM/YYYY HH:mm").format(
-        "DD/MM/YYYY"
+      const key = dayjs(transaction.datetime, DATETIME_FORMAT).format(
+        DATE_FORMAT
       );
 
-      if (result[key] && Array.isArray(result[key])) {
-        result[key] = [...result[key], transaction];
+      if (
+        result[key] &&
+        result[key].constructor === Object &&
+        Array.isArray(result[key].transactions)
+      ) {
+        result[key] = {
+          total:
+            result[key].total +
+            (transaction.notReportFlg ? 0 : transaction.money),
+          transactions: [...result[key].transactions, transaction],
+        };
         return;
       }
-      result[key] = [transaction];
+
+      result[key] = {
+        total: transaction.notReportFlg ? 0 : transaction.money,
+        transactions: [transaction],
+      };
     });
 
     return result;
   };
 
-  const getDay = (day: number) => {
-    switch (day) {
-      case 1:
-        return "Thứ Hai";
-      case 2:
-        return "Thứ Ba";
-      case 3:
-        return "Thứ Tư";
-      case 4:
-        return "Thứ Năm";
-      case 5:
-        return "Thứ Sáu";
-      case 6:
-        return "Thứ Bảy";
-      default:
-        return "Chủ nhật";
-    }
-  };
   const renderTransactions = () => {
     const formatData = prepareData(data);
-
     return Object.keys(formatData).map((key) => {
-      const date = moment(key, "DD/MM/YYYY");
-      const viDay = getDay(Number(date.format("d")));
+      const date = moment(key, DATE_FORMAT);
+      const viDay = dayOfWeek(date);
+      const expenseTotal = formatData[key].total;
       return (
         <Style.TransactionDate key={key}>
-          <div className="top">
-            <div className="day-of-week">{viDay}</div>
-            <div className="date">{date.locale("vi").format("L")}</div>
-          </div>
+          <Style.TransactionSummary>
+            <div className="date-info">
+              <div className="day-of-week">{viDay}</div>
+              <div className="date">{date.locale("vi").format("L")}</div>
+            </div>
+            <div className="expense-total">
+              <span className={expenseTotal > 0 ? "increment" : "minus"}>
+                {`${new Intl.NumberFormat().format(Math.abs(expenseTotal))}`}
+                <span className="unit">đ</span>
+              </span>
+            </div>
+          </Style.TransactionSummary>
+          <Style.TransactionList>
+            {formatData[key].transactions.map((transaction: Transaction) => (
+              <Style.TransactionItem
+                key={transaction.id}
+                onClick={() => router.push(`/transaction?id=${transaction.id}`)}
+              >
+                <div className="category-icon">
+                  <span className="icon">
+                    {categoriesByKey[transaction.category]?.icon}
+                  </span>
+                </div>
+                <div className="transaction--info">
+                  <div className="category-title">
+                    {categoriesByKey[transaction.category]?.title}
+                  </div>
+                  <div className="transaction-note">{transaction.note}</div>
+                </div>
+                <div className="expense--info">
+                  <div className="expense">
+                    <span
+                      className={transaction.money > 0 ? "increment" : "minus"}
+                    >
+                      {`${new Intl.NumberFormat().format(
+                        Math.abs(transaction.money)
+                      )}`}
+                      <span className="unit">đ</span>
+                    </span>
+                  </div>
+                  <div className="time">
+                    {moment(transaction.datetime, DATETIME_FORMAT).format(
+                      TIME_FORMAT
+                    )}
+                  </div>
+                </div>
+              </Style.TransactionItem>
+            ))}
+          </Style.TransactionList>
         </Style.TransactionDate>
       );
     });

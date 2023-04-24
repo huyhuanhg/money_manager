@@ -1,12 +1,14 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import TransactionReducerType from "@/types/reducers/TransactionReducerType";
 import {
   fetchFirstPaginateOwnedTransactions,
   fetchPaginateOwnedTransactions,
+  fetchTransactionById,
 } from "./action";
 
 const initialState: TransactionReducerType = {
   data: [],
+  detail: undefined,
 };
 
 const transaction = createSlice({
@@ -32,6 +34,21 @@ const transaction = createSlice({
         };
       }
     );
+    builder.addCase(
+      fetchTransactionById.fulfilled,
+      (state, { payload }: any) => {
+        return {
+          ...state,
+          detail: { ...payload.transaction },
+        };
+      }
+    );
+    builder.addCase("transaction/clear_detail", (state) => {
+      return {
+        ...state,
+        detail: undefined,
+      };
+    });
   },
 });
 
