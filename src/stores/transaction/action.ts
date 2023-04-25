@@ -12,6 +12,7 @@ import {
   getDoc,
   doc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 export const fetchStoreTransaction = createAsyncThunk(
@@ -119,5 +120,14 @@ export const fetchTransactionById = createAsyncThunk(
     } catch (e) {
       return Promise.reject();
     }
+  }
+);
+
+export const fetchDeleteTransaction = createAsyncThunk(
+  "transaction/delete",
+  async ({ id }: any) => {
+    await deleteDoc(doc(db, "transactions", id));
+
+    return Promise.resolve({id})
   }
 );

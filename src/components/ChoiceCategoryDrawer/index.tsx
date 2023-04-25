@@ -1,8 +1,9 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import Container from "./ChoiceCategoryDrawer.style";
 import ChoiceCategoryDrawerProps from "./ChoiceCategoryDrawerProps.props";
 import { Button } from "../common";
 import Categories from "../Categories";
+import CreateCategoryDrawer from "../CreateCategoryDrawer";
 
 const ChoiceCategoryDrawer: FC<ChoiceCategoryDrawerProps> = ({
   height,
@@ -10,8 +11,9 @@ const ChoiceCategoryDrawer: FC<ChoiceCategoryDrawerProps> = ({
   isOpen,
   setDisplay,
   data,
-  onChange
+  onChange,
 }) => {
+  const [isOpenCreateDrawer, setIsOpenCreateDrawer] = useState(false);
 
   const onClose = () => {
     setDisplay(false);
@@ -23,9 +25,19 @@ const ChoiceCategoryDrawer: FC<ChoiceCategoryDrawerProps> = ({
       placement={placement ?? "top"}
       open={isOpen}
       onClose={onClose}
-      footer={<Button>Thêm danh mục</Button>}
+      footer={
+        <Button onClick={() => setIsOpenCreateDrawer(true)}>
+          Thêm danh mục
+        </Button>
+      }
     >
       <Categories categories={data} onSelected={onChange} />
+      <CreateCategoryDrawer
+        placement={placement}
+        isOpen={isOpenCreateDrawer}
+        height="100vh"
+        setDisplay={setIsOpenCreateDrawer}
+      />
     </Container>
   );
 };

@@ -1,6 +1,7 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import TransactionReducerType from "@/types/reducers/TransactionReducerType";
 import {
+  fetchDeleteTransaction,
   fetchFirstPaginateOwnedTransactions,
   fetchPaginateOwnedTransactions,
   fetchTransactionById,
@@ -40,6 +41,22 @@ const transaction = createSlice({
         return {
           ...state,
           detail: { ...payload.transaction },
+        };
+      }
+    );
+    builder.addCase(
+      fetchDeleteTransaction.fulfilled,
+      (state, { payload }: any) => {
+        const cloneTrans = [...state.data]
+        const transIndex = cloneTrans.findIndex(trans => trans.id === payload.id)
+
+        if (-1 !== transIndex) {
+          cloneTrans.splice(transIndex, 1)
+        }
+
+        return {
+          ...state,
+          data: [...cloneTrans]
         };
       }
     );

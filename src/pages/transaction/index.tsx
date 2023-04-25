@@ -3,7 +3,7 @@ import Layout from "@/layouts/TransactionLayout";
 import { useEffect, useState } from "react";
 import { Input, Space, Switch, TimePicker } from "antd";
 import * as FieldStyle from "@/components/common/Field/Field.style";
-import { DatePicker, Field } from "@/components/common";
+import { Button, DatePicker, Field } from "@/components/common";
 import { DownOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { RangePickerProps } from "antd/es/date-picker";
@@ -20,6 +20,7 @@ import ChoiceCategoryDrawer from "@/components/ChoiceCategoryDrawer";
 import { fetchAllOwnedCategories } from "@/stores/category/action";
 import Category from "@/types/entities/CategoryType";
 import {
+  fetchDeleteTransaction,
   fetchStoreTransaction,
   fetchTransactionById,
   fetchUpdateTransaction,
@@ -251,7 +252,7 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
                 Math.abs(transaction?.money as number) +
                 payload.balance,
             })
-          );
+          ).then(() => router.push("/"));
         }
       );
     } else {
@@ -266,12 +267,29 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
               id: payload.walletId,
               money: wallets[walletIndex].money + payload.balance,
             })
-          );
+          ).then(() => router.push("/"));
         }
       );
     }
+  };
 
-    router.push("/");
+  const onDelete = () => {
+    if (!transaction) {
+      return;
+    }
+
+    dispatch(fetchDeleteTransaction({ id: transaction.id })).then(() => {
+      const walletIndex = wallets.findIndex(
+        (wallet) => transaction.wallet === wallet.id
+      );
+
+      dispatch(
+        fetchChangeBalance({
+          id: transaction.wallet,
+          money: wallets[walletIndex].money + Math.abs(transaction.money),
+        })
+      ).then(() => router.push("/"));
+    });
   };
 
   return (
@@ -386,6 +404,15 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
         onChange={onChangeCategory}
         data={categories}
       />
+      {transaction && (
+        <Button
+          danger
+          style={{ margin: "0 20px", width: "calc(100% - 40px)" }}
+          onClick={onDelete}
+        >
+          Xóa
+        </Button>
+      )}
     </Layout>
   );
 };

@@ -1,8 +1,9 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import Wallets from "../Wallets";
 import Container from "./ChoiceWalletDrawer.style";
 import { Button } from "../common";
 import ChoiceWalletDrawerProps from "./ChoiceWalletDrawer.props";
+import CreateWalletDrawer from "../CreateWalletDrawer";
 
 const ChoiceWalletDrawer: FC<ChoiceWalletDrawerProps> = ({
   isOpen,
@@ -10,8 +11,10 @@ const ChoiceWalletDrawer: FC<ChoiceWalletDrawerProps> = ({
   onChange,
   height,
   data,
-  placement
+  placement,
 }) => {
+  const [isOpenCreateDrawer, setIsOpenCreateDrawer] = useState(false);
+
   const onClose = () => {
     setDisplay(false);
   };
@@ -22,9 +25,17 @@ const ChoiceWalletDrawer: FC<ChoiceWalletDrawerProps> = ({
       placement={placement ?? "top"}
       open={isOpen}
       onClose={onClose}
-      footer={<Button>Thêm ví</Button>}
+      footer={
+        <Button onClick={() => setIsOpenCreateDrawer(true)}>Thêm ví</Button>
+      }
     >
       <Wallets wallets={data} onSelected={onChange}></Wallets>
+      <CreateWalletDrawer
+        placement={placement}
+        isOpen={isOpenCreateDrawer}
+        height="100vh"
+        setDisplay={setIsOpenCreateDrawer}
+      />
     </Container>
   );
 };
