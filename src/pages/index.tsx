@@ -1,58 +1,61 @@
-import styles from "@/styles/Home.module.css";
-import Layout from "@/layouts/Layout";
-import TransactionEmpty from "@/components/TransactionEmpty";
-import ChoiceWalletModal from "@/components/ChoiceWalletModal";
-import { useState } from "react";
-import { auth, db } from "@/configs/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { collection, query, where } from "firebase/firestore";
+import Layout from "@/layouts/DashboardLayout";
+import { Empty as TransactionEmpty } from "@/components/common";
+import { useEffect, useState } from "react";
+import { AuthComponentProps } from "@/types/props/AuthComponentProps";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllOwnedWallets } from "@/stores/wallet/action";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import WalletReducerType from "@/types/reducers/WalletReducerType";
+import ChoiceWalletDrawer from "@/components/ChoiceWalletDrawer";
+import WalletType from "@/types/entities/WalletType";
+import ActiveWallet from "@/components/ActiveWallet";
+import { fetchFirstPaginateOwnedTransactions } from "@/stores/transaction/action";
+import Transactions from "@/components/Transactions";
+import TransactionReducerType from "@/types/reducers/TransactionReducerType";
+import { fetchAllOwnedCategories } from "@/stores/category/action";
 
-const Home = () => {
-  const [loggedInUser, _loading] = useAuthState(auth);
-
-  const [isOpenChoiceWallet, setIsOpenChoiceWallet] = useState(false);
-  const [currentWallet, setCurrentWallet] = useState({
-    icon: "A",
-    title: "Tất cả",
-    money: 0,
-  });
-
-  const q = query(
-    collection(db, "wallets"),
-    where("user", "==", loggedInUser?.email || 'Unknown')
+const Home = ({ user }: AuthComponentProps) => {
+  const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
+  const { data: wallets, active: walletActiveIndex } = useSelector(
+    ({ walletReducer: wallets }: Record<string, WalletReducerType>) => wallets
   );
-  const [wallets, __loading, __err] = useCollection(q);
+  const { data: transactions } = useSelector(
+    ({ transactionReducer: transactions }: Record<string, TransactionReducerType>) => transactions
+  );
 
+  const [isDisplayChoiceWallet, setIsDisplayChoiceWallet] = useState(false);
 
-  const showChoiceWalletModal = () => {
-    setIsOpenChoiceWallet(true);
+  useEffect(() => {
+    dispatch(fetchAllOwnedCategories({ email: user.email }));
+    dispatch(fetchAllOwnedWallets({ email: user.email }));
+    dispatch(fetchFirstPaginateOwnedTransactions({ email: user.email }));
+  }, []);
+
+  const displayChoiceWalletDrawer = () => {
+    setIsDisplayChoiceWallet(true);
   };
 
-  const onChangeCurrentWallet = (data: any) => {
-    setCurrentWallet(data);
-    setIsOpenChoiceWallet(false);
+  const onChangeCurrentWallet = (_wallet: WalletType, index: number) => {
+    dispatch({ type: "wallet/changeActive", payload: { index } });
+    setIsDisplayChoiceWallet(false);
   };
 
   return (
     <Layout>
-      <div className={styles.currentWallet} onClick={showChoiceWalletModal}>
-        <div className={styles.walletInfo}>
-          <span className={styles.walletIcon}>{currentWallet?.icon}</span>
-          <span className={styles.walletTitle}>{currentWallet?.title}</span>
-        </div>
-        <div className={styles.currentMoney}>
-          {new Intl.NumberFormat().format(currentWallet?.money)}đ
-        </div>
-      </div>
-      <ChoiceWalletModal
-        isOpen={isOpenChoiceWallet}
-        setDisplay={setIsOpenChoiceWallet}
+      <ActiveWallet
+        wallet={wallets[walletActiveIndex]}
+        onClick={displayChoiceWalletDrawer}
+      />
+      <ChoiceWalletDrawer
+        isOpen={isDisplayChoiceWallet}
+        setDisplay={setIsDisplayChoiceWallet}
         onChange={onChangeCurrentWallet}
         data={wallets}
       />
       <main>
-        <TransactionEmpty />
+        {
+          transactions.length === 0 ? <TransactionEmpty /> : <Transactions data={transactions} />
+        }
       </main>
     </Layout>
   );
