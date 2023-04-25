@@ -11,6 +11,7 @@ import {
   startAfter,
   getDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 
 export const fetchStoreTransaction = createAsyncThunk(
@@ -26,6 +27,24 @@ export const fetchStoreTransaction = createAsyncThunk(
     } catch (error) {
       console.error("ERROR SET TRANSACTION IN DB", error);
       return Promise.reject("ERROR SET TRANSACTION IN DB");
+    }
+
+    return Promise.resolve({ walletId: data.wallet, balance: -1 * data.money });
+  }
+);
+
+export const fetchUpdateTransaction = createAsyncThunk(
+  "transaction/update_transaction",
+  async ({ data, id }: any) => {
+    try {
+      const res = await updateDoc(doc(db, "transactions", id), {
+        ...data,
+        money: -1 * data.money,
+      });
+      console.log('res :>> ', res);
+    } catch (error) {
+      console.error("ERROR UPDATE TRANSACTION IN DB", error);
+      return Promise.reject("ERROR UPDATE TRANSACTION IN DB");
     }
 
     return Promise.resolve({ walletId: data.wallet, balance: -1 * data.money });

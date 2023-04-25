@@ -1,7 +1,7 @@
 import Category from "../entities/CategoryType";
 import AbstractReducerType from "./AbstractReducerType";
 
-interface FormatData extends Category {
+export interface FormatData extends Category {
   child?: Category[] | null
 }
 

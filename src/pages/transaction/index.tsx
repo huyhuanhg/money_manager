@@ -22,6 +22,7 @@ import Category from "@/types/entities/CategoryType";
 import {
   fetchStoreTransaction,
   fetchTransactionById,
+  fetchUpdateTransaction,
 } from "@/stores/transaction/action";
 import { useRouter } from "next/router";
 import CategoryReducerType from "@/types/reducers/CategoryReducerType";
@@ -235,20 +236,40 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
       return;
     }
 
-    dispatch(fetchStoreTransaction({ data, email: user.email })).then(
-      ({ payload }: any) => {
-        const walletIndex = wallets.findIndex(
-          (wallet) => payload.walletId === wallet.id
-        );
+    const { id } = router.query;
+    if (id) {
+      dispatch(fetchUpdateTransaction({ data, id })).then(
+        ({ payload }: any) => {
+          const walletIndex = wallets.findIndex(
+            (wallet) => payload.walletId === wallet.id
+          );
+          dispatch(
+            fetchChangeBalance({
+              id: payload.walletId,
+              money:
+                wallets[walletIndex].money +
+                Math.abs(transaction?.money as number) +
+                payload.balance,
+            })
+          );
+        }
+      );
+    } else {
+      dispatch(fetchStoreTransaction({ data, email: user.email })).then(
+        ({ payload }: any) => {
+          const walletIndex = wallets.findIndex(
+            (wallet) => payload.walletId === wallet.id
+          );
 
-        dispatch(
-          fetchChangeBalance({
-            id: payload.walletId,
-            money: wallets[walletIndex].money + payload.balance,
-          })
-        );
-      }
-    );
+          dispatch(
+            fetchChangeBalance({
+              id: payload.walletId,
+              money: wallets[walletIndex].money + payload.balance,
+            })
+          );
+        }
+      );
+    }
 
     router.push("/");
   };
@@ -309,14 +330,14 @@ const TransactionCreate = ({ user }: AuthComponentProps) => {
         <FieldStyle.DateTimePicker>
           <DatePicker
             className="date"
-            format="DD/MM/YYYY"
+            format={DATE_FORMAT}
             disabledDate={disabledDate}
-            value={dayjs(formState.date.value, "DD/MM/YYYY")}
+            value={dayjs(formState.date.value, DATE_FORMAT)}
             onChange={(_, value) => handleChangeFormState("date", { value })}
           />
           <TimePicker
-            value={dayjs(formState.time.value, "HH:mm")}
-            format={"HH:mm"}
+            value={dayjs(formState.time.value, TIME_FORMAT)}
+            format={TIME_FORMAT}
             onChange={(_, value) => handleChangeFormState("time", { value })}
           />
         </FieldStyle.DateTimePicker>
