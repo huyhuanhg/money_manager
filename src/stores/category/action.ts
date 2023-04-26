@@ -1,7 +1,7 @@
 import { db } from "@/configs/firebase";
 import Category from "@/types/entities/CategoryType";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore";
 
 export const fetchAllOwnedCategories = createAsyncThunk(
   "category/all_owned",
@@ -39,5 +39,27 @@ export const fetchAllOwnedCategories = createAsyncThunk(
       });
 
     return Promise.resolve({ categories, formatCategories: Object.values(parents) });
+  }
+);
+
+export const fetchStoreCategory = createAsyncThunk(
+  "category/store_category",
+  async ({ data }: any) => {
+    try {
+      const newCategory = await addDoc(collection(db, "categories"), {
+        ...data,
+        timestamp: serverTimestamp()
+      });
+
+      return Promise.resolve({
+        category: {
+          id: newCategory.id,
+          ...data,
+        },
+      });
+    } catch (error) {
+      console.error("ERROR SET CATEGORY IN DB", error);
+      return Promise.reject("ERROR SET CATEGORY IN DB");
+    }
   }
 );

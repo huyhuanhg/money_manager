@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllOwnedWallets } from "./action";
+import { fetchAllOwnedWallets, fetchStoreWallet } from "./action";
 import WalletReducerType from "@/types/reducers/WalletReducerType";
 
 const initialState: WalletReducerType = {
@@ -39,6 +39,23 @@ const wallet = createSlice({
         data: wallets,
         active: 0,
       };
+    });
+    builder.addCase(fetchStoreWallet.fulfilled, (state, { payload }) => {
+        const totalMoney = state.data[0].money + payload.wallet?.money;
+
+        const wallets = [
+          {
+            ...state.data[0],
+            money: totalMoney,
+          },
+          ...state.data,
+          payload.wallet
+        ];
+
+        return {
+          ...state,
+          data: wallets,
+        };
     });
     builder.addCase("wallet/changeActive", (state, { payload }: any) => {
       return {

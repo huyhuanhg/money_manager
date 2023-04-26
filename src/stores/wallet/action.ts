@@ -1,6 +1,7 @@
 import { db } from "@/configs/firebase";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
@@ -31,13 +32,29 @@ export const fetchAllOwnedWallets = createAsyncThunk(
 export const fetchChangeBalance = createAsyncThunk(
   "wallet/change_the_balance",
   async ({ id, money }: any) => {
-    await updateDoc(
-      doc(db, "wallets", id),
-      {
-        money,
-      }
-    );
+    await updateDoc(doc(db, "wallets", id), {
+      money,
+    });
 
     return Promise.resolve({ id, money });
+  }
+);
+
+export const fetchStoreWallet = createAsyncThunk(
+  "wallet/store_wallet",
+  async ({ data }: any) => {
+    try {
+      const newWallet = await addDoc(collection(db, "wallets"), data);
+
+      return Promise.resolve({
+        wallet: {
+          id: newWallet.id,
+          ...data,
+        },
+      });
+    } catch (error) {
+      console.error("ERROR SET WALLET IN DB", error);
+      return Promise.reject("ERROR SET WALLET IN DB");
+    }
   }
 );

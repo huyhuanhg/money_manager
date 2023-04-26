@@ -12,6 +12,7 @@ const ChoiceCategoryDrawer: FC<ChoiceCategoryDrawerProps> = ({
   setDisplay,
   data,
   onChange,
+  footer
 }) => {
   const [isOpenCreateDrawer, setIsOpenCreateDrawer] = useState(false);
 
@@ -26,6 +27,7 @@ const ChoiceCategoryDrawer: FC<ChoiceCategoryDrawerProps> = ({
       open={isOpen}
       onClose={onClose}
       footer={
+        footer ??
         <Button onClick={() => setIsOpenCreateDrawer(true)}>
           Thêm danh mục
         </Button>

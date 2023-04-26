@@ -1,4 +1,5 @@
 import Category from "@/types/entities/CategoryType";
+import { ReactNode } from "react";
 
 export default interface ChoiceCategoryDrawerProps {
   isOpen: boolean;
@@ -7,4 +8,5 @@ export default interface ChoiceCategoryDrawerProps {
   height?: number | string;
   placement?: "top" | "bottom";
   data: Category[];
+  footer?: ReactNode
 }

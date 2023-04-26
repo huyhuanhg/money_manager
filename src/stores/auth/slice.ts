@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { fetchLogin } from "./action"
+import AuthReducerType from "@/types/reducers/AuthReducerType"
 
-const initialState = {
+const initialState: AuthReducerType = {
   email: '',
   photoUrl: '',
   fullName: ''
