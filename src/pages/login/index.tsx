@@ -3,7 +3,7 @@ import { useSignInWithGoogle, useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Button, Loading } from "@/components/common";
-import { Container } from "./Login.style";
+import Container from "./Login.style";
 
 const Login = () => {
   const [singInWithGoogle, _user, _loading, _err] = useSignInWithGoogle(auth);

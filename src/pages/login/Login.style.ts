@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
+const Container = styled.div`
   background: #595959;
   display: flex;
   align-items: center;
@@ -11,3 +11,5 @@ export const Container = styled.div`
     width: auto;
   }
 `;
+
+export default Container
